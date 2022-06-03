@@ -1,5 +1,7 @@
 # ihelper
 
+the extension of raycast.
+
 input command or hotkey as easy as use dictionary
 
 ![Screenshot](./metadata/screenshot.png)
