@@ -2,7 +2,7 @@
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "ihelper",
   "title": "ihelper",
-  "description": "help remember command or hotkey and quick output them",
+  "description": "help remember command or hotkey and output them quickly",
   "icon": "icon.png",
   "author": "fumeboy",
   "categories": [
@@ -13,7 +13,7 @@
     {
       "name": "index",
       "title": "ihelper",
-      "description": "quick input",
+      "description": "input helper",
       "mode": "view"
     }
   ],

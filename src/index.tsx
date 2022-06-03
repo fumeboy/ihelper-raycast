@@ -164,8 +164,8 @@ export default function CommandSearch() {
     <List
       enableFiltering={false}
       onSearchTextChange={setSearchText}
-      navigationTitle="search and quick output"
-      searchBarPlaceholder="help remember command or hotkey and quick output them"
+      navigationTitle="ihelper"
+      searchBarPlaceholder="help remember command or hotkey and output them quickly"
     >
       {filteredList.map((item) => {
         return (
