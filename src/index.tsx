@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import fs = require("fs");
 import os = require("os");
 import { runAppleScript } from "run-applescript";
+import examplecsv from "./dict.example.json";
 const filecontent: { tag: string; desc: string; output: string; iftext: boolean }[] = [];
 
 const dictfile = os.homedir() + "/.ihelper.csv";
@@ -10,7 +11,8 @@ const dictfile = os.homedir() + "/.ihelper.csv";
 function loaddict() {
   fs.readFile(dictfile, "utf8", (err, data) => {
     if (err != null) {
-      fs.writeFile(dictfile, "", { flag: "a" }, () => null);
+      data = (examplecsv as string[]).join("\n");
+      fs.writeFile(dictfile,data, { flag: "a+", mode: 0o777 }, (err) => console.log(err));
     }
     if (data == null) {
       return;
@@ -79,6 +81,7 @@ const keycode = new Map([
   ["OPTION", "58"],
   ["COMMAND", "55"],
   ["SHIFT", "56"],
+  ["SPACE", "49"],
 ]);
 
 function parseCSVline(l: string) {
@@ -152,6 +155,25 @@ function getitems(origin: string) {
   return r;
 }
 
+function Actions() {
+  return (
+    <ActionPanel.Section>
+      <Action title="reload dict" onAction={() => loaddict()} shortcut={{ modifiers: ["cmd"], key: "s" }} />
+      <Action
+        title="edit dict"
+        onAction={() =>
+          runAppleScript(`set targetFilepath to "${dictfile}"
+tell application "TextEdit"
+  activate
+  open targetFilepath
+end tell`)
+        }
+        shortcut={{ modifiers: ["cmd"], key: "w" }}
+      />
+    </ActionPanel.Section>
+  );
+}
+
 export default function CommandSearch() {
   const [searchText, setSearchText] = useState("");
   const [filteredList, setFilteredList] = useState(
@@ -160,106 +182,105 @@ export default function CommandSearch() {
   useEffect(() => {
     setFilteredList(getitems(searchText));
   }, [searchText]);
-  return (
+  let list = (
     <List
       enableFiltering={false}
       onSearchTextChange={setSearchText}
       navigationTitle="ihelper"
       searchBarPlaceholder="help remember command or hotkey and output them quickly"
     >
-      {filteredList.map((item) => {
-        return (
-          <List.Item
-            key={item.output + item.desc}
-            icon={item.iftext ? "↩︎" : Icon.Circle}
-            title={item.desc}
-            subtitle={item.tag}
-            accessories={[{ text: item.output }]}
-            actions={
-              <ActionPanel>
-                <Action
-                  title="output"
-                  onAction={() => {
-                    if (item.iftext) {
-                      Clipboard.paste(item.output);
-                    } else {
-                      const keys = item.output.split("+");
-                      if (keys[-1] == "plus") {
-                        keys[-1] = "+";
-                      }
-                      let press = "";
-                      const modifys = [false, false, false, false]; // cmd, ctrl, option, shift
-                      for (const k of keys) {
-                        switch (k) {
-                          case "cmd":
-                          case "command":
-                            modifys[0] = true;
-                            break;
-                          case "ctrl":
-                          case "control":
-                            modifys[1] = true;
-                            break;
-                          case "option":
-                            modifys[2] = true;
-                            break;
-                          case "shift":
-                            modifys[3] = true;
-                            break;
-                          default:
-                            press = k;
-                        }
-                      }
-                      let m = [];
-                      if (modifys[0]) {
-                        m.push("command");
-                      }
-                      if (modifys[1]) {
-                        m.push("control");
-                      }
-                      if (modifys[2]) {
-                        m.push("option");
-                      }
-                      if (modifys[3]) {
-                        m.push("shift");
-                      }
-                      if (press == "") {
-                        if (m.length == 0) {
-                          return;
-                        }
-                        press = m[-1];
-                        m = m.slice(0, -1);
-                      }
-                      const kcode = keycode.get(press.toUpperCase());
-                      if (kcode == undefined) {
+      {filteredList.length > 0 ? (
+        filteredList.map((item, i) => {
+          return (
+            <List.Item
+              key={i}
+              icon={item.iftext ? "↩︎" : "⌗"}
+              title={item.desc}
+              subtitle={item.tag}
+              accessories={[{ text: item.output }]}
+              actions={
+                <ActionPanel>
+                  <Action
+                    title="output"
+                    onAction={() => {
+                      if (item.output.length == 0) {
                         return;
                       }
-                      const applescript = `tell application "System Events"
-                    key code ${kcode} using {${m.map((s) => s + " down").join(",")}}
-                end`;
-                      runAppleScript(applescript);
-                    }
-                    closeMainWindow({ clearRootSearch: true });
-                  }}
-                />
-                <ActionPanel.Section title="dict">
-                  <Action title="reload dict" onAction={() => loaddict()} shortcut={{ modifiers: ["cmd"], key: "s" }} />
-                  <Action
-                    title="edit dict"
-                    onAction={() =>
-                      runAppleScript(`set targetFilepath to "${dictfile}"
-                    tell application "TextEdit"
-                        activate
-                        open targetFilepath
-                    end tell`)
-                    }
-                    shortcut={{ modifiers: ["cmd"], key: "w" }}
+                      if (item.iftext) {
+                        Clipboard.paste(item.output);
+                      } else {
+                        const keys = item.output.split("+").map((k) => k.trim());
+                        if (keys[-1] == "plus") {
+                          keys[-1] = "+";
+                        }
+                        let press = "";
+                        const modifys = [false, false, false, false]; // cmd, ctrl, option, shift
+                        for (const k of keys) {
+                          switch (k) {
+                            case "cmd":
+                            case "command":
+                              modifys[0] = true;
+                              break;
+                            case "ctrl":
+                            case "control":
+                              modifys[1] = true;
+                              break;
+                            case "option":
+                              modifys[2] = true;
+                              break;
+                            case "shift":
+                              modifys[3] = true;
+                              break;
+                            default:
+                              press = k;
+                          }
+                        }
+                        let m = [];
+                        if (modifys[0]) {
+                          m.push("command");
+                        }
+                        if (modifys[1]) {
+                          m.push("control");
+                        }
+                        if (modifys[2]) {
+                          m.push("option");
+                        }
+                        if (modifys[3]) {
+                          m.push("shift");
+                        }
+                        if (press == "") {
+                          if (m.length == 0) {
+                            return;
+                          }
+                          press = m[-1];
+                          m = m.slice(0, -1);
+                        }
+                        const kcode = keycode.get(press.toUpperCase());
+                        if (kcode == undefined) {
+                          return;
+                        }
+                        const applescript = `tell application "System Events"
+              key code ${kcode} using {${m.map((s) => s + " down").join(",")}}
+          end`;
+                        runAppleScript(applescript);
+                      }
+                      closeMainWindow({ clearRootSearch: true });
+                    }}
                   />
-                </ActionPanel.Section>
-              </ActionPanel>
-            }
-          />
-        );
-      })}
+                  <Actions/>
+                </ActionPanel>
+              }
+            />
+          );
+        })
+      ) : (
+        <>
+          <List.Item key={0}  title={"press cmd+w to edit dictionary"} actions={<ActionPanel><Actions/></ActionPanel>} />
+          <List.Item key={1}  title={"press cmd+s to load dictionary"} actions={<ActionPanel><Actions/></ActionPanel>} />
+        </>
+      )}
     </List>
   );
+
+  return list;
 }
