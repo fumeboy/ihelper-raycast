@@ -8,7 +8,7 @@ input command or hotkey as easy as use dictionary
 
 user need prepare a CSV file at `~/.ihelper.csv`,this CSV file is your dictionary.
 
-if you want raycast help you input `vim` command,  just write this line in `~/.ihelper.csv` as this: `vim;cursor;,move cursor left,h,1`
+if you want raycast help you input `vim` command,  just write line `vim;cursor;,move cursor left,h,1` in `~/.ihelper.csv`
 
 then you can tap `v` in searchbar and see this line, tap enter, then `h` output, the `move cursor left` executed. (but you need tap `cmd+s` to reload dictionary from `~/.ihelper.csv` first)
 
