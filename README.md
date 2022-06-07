@@ -10,9 +10,9 @@ input command or hotkey with index.
 
 user need prepare a CSV file at `~/.ihelper.csv`,this CSV file is your dictionary.
 
-if you want raycast help you input `vim` command,  just write line `vim;cursor;,move cursor left,h,1` in `~/.ihelper.csv`
+if you want raycast help you input `vim` command,  just write lines like `vim;cursor;,move cursor left,h,1` in `~/.ihelper.csv`
 
-then you can tap `v` in searchbar and see this line, tap enter, then `h` output, the `move cursor left` executed. (but you need tap `cmd+s` to reload dictionary from `~/.ihelper.csv` first)
+then you can tap `v` in searchbar and see this line, tap enter, then `h` output, the `move cursor left` executed. (but after editing dictionary file, you need reload dictionary from `~/.ihelper.csv` first)
 
 ## whats meaning of `vim;cursor;,move cursor left,h,1`
 
@@ -34,11 +34,13 @@ when you tap `v`，this extension will try to find all dictionary lines which ta
 
 ### output-type
 
-there 2 type of output
+there 3 type of output
 
 1 = text output
 
 2 = hotkey exec; for example, if `.output` = `ctrl + c`, these keys will be press. 
+
+3 = JSON array for multiple output; the .output format is `[<output-type>, "<output-content>"], [<second-output-type>, "<second-output-content>"] ...`
 
 ## other
 
