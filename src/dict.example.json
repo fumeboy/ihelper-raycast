@@ -148,7 +148,7 @@
   "vim;edit;:;,replace all old with new throughout file with confirmations,:%s/old/new/gc,1",
   "vim;edit;:;,remove highlighting of search matches,:noh,1",
   "vim;tabs;:;,open a file in a new tab,:tabnew,1",
-  "vim;tabs;,\"move the current split window into its own tab;  (manual) press `Ctrl + w`, then input `T`\",,1",
+  "vim;tabs;,\"move the current split window into its own tab\",\"[2, \"ctrl+w\"], [1, \"T\"]\",3",
   "vim;tabs;:;,move to the next tab,:tabn,1",
   "vim;tabs;:;,move to the previous tab,:tabp,1",
   "vim;tabs;,move to tab number 0,0gt,1",
