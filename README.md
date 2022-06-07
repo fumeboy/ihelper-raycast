@@ -2,7 +2,7 @@
 
 the extension of raycast.
 
-input command or hotkey as easy as use dictionary
+input command or hotkey with index.
 
 ![Screenshot](./metadata/screenshot.png)
 
