@@ -2,7 +2,7 @@
 
 the extension of raycast.
 
-input command or hotkey with index.
+find command or hotkey with index, and output that.
 
 ![Screenshot](./metadata/screenshot.png)
 
